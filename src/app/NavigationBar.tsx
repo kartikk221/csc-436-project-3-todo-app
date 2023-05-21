@@ -2,6 +2,10 @@
 import Link from 'next/link';
 import { useState } from 'react';
 
+import { Inter } from 'next/font/google';
+
+const inter = Inter({ subsets: ['latin'] });
+
 // Define the navigation bar routes for center display
 const navigation_center_routes = [
     {
@@ -46,7 +50,11 @@ export default function NavigationBar() {
     const right_routes = navigation_right_routes;
 
     return (
-        <div className="z-10 w-full max-w-7xl items-center justify-between font-mono text-sm lg:flex">
+        <div
+            className={
+                'z-10 w-full max-w-7xl items-center justify-between font-mono text-sm lg:flex ' + inter.className
+            }
+        >
             {/* Logo Section */}
             <div className="fixed bottom-0 left-0 flex h-48 w-full flex-row items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
                 <div className="flex-row">
@@ -71,7 +79,7 @@ export default function NavigationBar() {
                     <Link key={id} href={path}>
                         <h1
                             className={`text-lg mx-5 transition-colors ${
-                                activeRoute === id ? 'text-[#ff822d] font-black' : 'font-light hover:text-[#ff822d]'
+                                activeRoute === id ? 'text-[#ff822d] font-black' : 'font-medium hover:text-[#ff822d]'
                             }`}
                         >
                             {name}
@@ -80,14 +88,26 @@ export default function NavigationBar() {
                 ))}
             </div>
             <div className="flex">
-                {right_routes.map(({ id, name, path }) => {
+                {right_routes.map(({ id, name, path }, index) => {
+                    const first = index === 0;
                     return (
-                        <Link key={id} href={path}>
-                            <h1
-                                className={`text-lg mx-3 px-5 py-2 rounded-xl font-black border border-[#ff822d] hover:bg-[#ff822d] hover:text-[#000] transition-colors`}
+                        <Link
+                            href={path}
+                            key={id}
+                            className={`group relative inline-block text-base font-semibold focus:outline-none focus:ring mx-2 transition-all ${
+                                first ? 'text-[#ff822d] hover:text-black' : 'text-black'
+                            }`}
+                        >
+                            <span className="absolute inset-0 border border-[#e67529] rounded-md"></span>
+                            <span
+                                className={`block border border-[#e67529] ${
+                                    first ? '' : 'bg-[#ff822d]'
+                                } rounded-md px-8 py-2 transition-transform group-hover:-translate-x-1 group-hover:-translate-y-1 ${
+                                    first ? 'group-hover:bg-[#ff822d]' : ''
+                                }`}
                             >
                                 {name}
-                            </h1>
+                            </span>
                         </Link>
                     );
                 })}
