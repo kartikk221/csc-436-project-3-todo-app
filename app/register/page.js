@@ -1,6 +1,39 @@
 'use client';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { supabase_register_user } from '@/utils/authentication';
 
-export default async function Register() {
+export default function Register() {
+    const router = useRouter();
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const onSubmit = async () => {
+        // Ensure a valid name is entered
+        if (name.length < 3) return alert('Please enter a valid name');
+
+        // Ensure a valid email is entered
+        const [email_name = '', email_domain = ''] = email.split('@');
+        const email_domain_parts = email_domain.split('.');
+        if (email_name.length < 3 || email_domain_parts.length < 2) return alert('Please enter a valid email address');
+
+        // Ensure a valid password is entered
+        if (password.length < 8) return alert('Please enter a valid and strong password');
+
+        // Register a supabase user account
+        const { success, error } = await supabase_register_user(name, email, password);
+        if (success) {
+            // Alert the user
+            alert(`Welcome to To-Do-It, ${name}!\n\nYour account has been created successfully.`);
+
+            // Redirect to the login page
+            router.push('/login');
+        } else {
+            alert(error);
+        }
+    };
+
     const inputStyle = 'w-full rounded-lg text-black font-medium border border-gray p-4 pe-12 text-sm shadow-sm';
     return (
         <div className="mx-auto my-auto px-4 py-16 sm:px-6 lg:px-8 animate-fade-in-up">
@@ -11,15 +44,33 @@ export default async function Register() {
 
             <div className="mx-auto mb-0 mt-8 max-w-md space-y-4">
                 <div className="relative">
-                    <input type="email" className={inputStyle} placeholder="Enter your name" />
+                    <input
+                        type="text"
+                        value={name}
+                        className={inputStyle}
+                        placeholder="Enter your name"
+                        onChange={(event) => setName(event.target.value)}
+                    />
                 </div>
 
                 <div className="relative">
-                    <input type="email" className={inputStyle} placeholder="Enter your email address" />
+                    <input
+                        type="email"
+                        value={email}
+                        className={inputStyle}
+                        placeholder="Enter your email address"
+                        onChange={(event) => setEmail(event.target.value)}
+                    />
                 </div>
 
                 <div className="relative">
-                    <input type="password" className={inputStyle} placeholder="Enter your password" />
+                    <input
+                        type="password"
+                        value={password}
+                        className={inputStyle}
+                        placeholder="Enter your password"
+                        onChange={(event) => setPassword(event.target.value)}
+                    />
                 </div>
 
                 <div className="flex items-center justify-between">
@@ -32,6 +83,7 @@ export default async function Register() {
 
                     <button
                         className={`group relative inline-block text-base font-semibold focus:outline-none focus:ring transition-all text-black`}
+                        onClick={onSubmit}
                     >
                         <span className="absolute inset-0 border border-[#6084f7] rounded-md"></span>
                         <span

@@ -1,6 +1,35 @@
 'use client';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { superbase_login_user } from '@/utils/authentication';
 
-export default async function Login() {
+export default function Login() {
+    const router = useRouter();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const onSubmit = async () => {
+        // Ensure a valid email is entered
+        const [email_name = '', email_domain = ''] = email.split('@');
+        const email_domain_parts = email_domain.split('.');
+        if (email_name.length < 3 || email_domain_parts.length < 2) return alert('Please enter a valid email address');
+
+        // Ensure a valid password is entered
+        if (password.length < 8) return alert('Please enter a valid ands strong password');
+
+        // Try to login with Supabase
+        const { success, user, error } = await superbase_login_user(email, password);
+        if (success) {
+            // Alert the user
+            alert(`Welcome back to To-Do-It, ${user.name}!\n\nYou have been logged in successfully.`);
+
+            // Redirect to the home page
+            router.push('/');
+        } else {
+            alert(error);
+        }
+    };
+
     const inputStyle = 'w-full rounded-lg text-black font-medium border border-gray p-4 pe-12 text-sm shadow-sm';
     return (
         <div className="mx-auto my-auto px-4 py-16 sm:px-6 lg:px-8 animate-fade-in-up">
@@ -11,11 +40,23 @@ export default async function Login() {
 
             <div className="mx-auto mb-0 mt-8 max-w-md space-y-4">
                 <div className="relative">
-                    <input type="email" className={inputStyle} placeholder="Enter your email address" />
+                    <input
+                        type="email"
+                        value={email}
+                        className={inputStyle}
+                        placeholder="Enter your email address"
+                        onChange={(event) => setEmail(event.target.value)}
+                    />
                 </div>
 
                 <div className="relative">
-                    <input type="password" className={inputStyle} placeholder="Enter your password" />
+                    <input
+                        type="password"
+                        value={password}
+                        className={inputStyle}
+                        placeholder="Enter your password"
+                        onChange={(event) => setPassword(event.target.value)}
+                    />
                 </div>
 
                 <div className="flex items-center justify-between">
@@ -28,6 +69,7 @@ export default async function Login() {
 
                     <button
                         className={`group relative inline-block text-base font-semibold focus:outline-none focus:ring transition-all text-black`}
+                        onClick={onSubmit}
                     >
                         <span className="absolute inset-0 border border-[#6084f7] rounded-md"></span>
                         <span
