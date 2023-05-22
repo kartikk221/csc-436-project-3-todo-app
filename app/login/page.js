@@ -1,11 +1,15 @@
 'use client';
+import Link from 'next/link';
+import Loader from '../Loader';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase_login_user } from '@/utils/authentication';
+import useUserProfile from '../../hooks/userUserProfile';
+import { supabase_login_user } from '../../utils/authentication';
 
 export default function Login() {
     const router = useRouter();
     const [email, setEmail] = useState('');
+    const { user, loading } = useUserProfile();
     const [password, setPassword] = useState('');
     const [inFlight, setInFlight] = useState(false);
 
@@ -29,6 +33,15 @@ export default function Login() {
             alert(error);
         }
     };
+
+    // Use loading state to show a loader while the user profile is loading
+    if (loading) return <Loader />;
+
+    // Redirect to home page if the user is already logged in
+    if (user) {
+        router.push('/');
+        return null;
+    }
 
     const inputStyle = 'w-full rounded-lg text-black font-medium border border-gray p-4 pe-12 text-sm shadow-sm';
     return (
@@ -62,9 +75,9 @@ export default function Login() {
                 <div className="flex items-center justify-between">
                     <p className="text-sm text-gray-500">
                         No account yet?{' '}
-                        <a className="ml-1 font-bold text-[#6084f7]" href="/register">
+                        <Link className="ml-1 font-bold text-[#6084f7]" href="/register" prefetch={true}>
                             Register
-                        </a>
+                        </Link>
                     </p>
 
                     <button

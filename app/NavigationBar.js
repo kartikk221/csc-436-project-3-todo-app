@@ -2,8 +2,7 @@
 import Link from 'next/link';
 import { Inter } from 'next/font/google';
 import { usePathname } from 'next/navigation';
-import useUserProfile from '@/hooks/userUserProfile';
-import Loader from './Loader';
+import useUserProfile from '../hooks/userUserProfile';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -34,6 +33,7 @@ const navigation_right_routes_not_logged_in = [
         id: 'login',
         name: 'Login',
         path: '/login',
+        arrow: true,
     },
     {
         id: 'register',
@@ -44,8 +44,8 @@ const navigation_right_routes_not_logged_in = [
 
 const navigation_right_routes_logged_in = [
     {
-        id: 'profile',
-        name: 'Profile',
+        id: 'favorites',
+        name: 'Favorites',
         path: '/user/:user/list',
     },
     {
@@ -86,7 +86,7 @@ export default function NavigationBar() {
             {/* Logo Section */}
             <Link
                 href="/"
-                className="fixed bottom-0 left-0 flex h-48 w-full flex-row items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none"
+                className="fixed bottom-0 left-0 flex h-48 w-full flex-row justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none"
             >
                 <div className="flex-row">
                     <h1 className="text-3xl font-black">
@@ -117,7 +117,12 @@ export default function NavigationBar() {
                     );
                 })}
             </div>
-            <div className={`flex transition-all opacity-[${loading ? '0' : '1'}]`}>
+            <div
+                className={`flex transition-all`}
+                style={{
+                    opacity: loading ? 0 : 1,
+                }}
+            >
                 {right_routes.map(({ id, name, path, arrow }, index) => {
                     const first = index === 0;
                     return (

@@ -1,5 +1,5 @@
-import supabase from '@/utils/supabase';
-import { supabase_get_user } from '@/utils/authentication';
+import supabase from '../utils/supabase';
+import { supabase_get_user } from '../utils/authentication';
 import { useRef, useState, useEffect, useCallback } from 'react';
 
 let cache = null;
@@ -10,8 +10,11 @@ export default function useUserProfile() {
     const [error, setError] = useState(undefined);
 
     const get_user = useCallback(async () => {
+        // Resolve from cache if possible
+        if (cache) return setUser(cache);
+
         // Get user from supabase
-        const user = cache || (await supabase_get_user());
+        const user = await supabase_get_user();
 
         // Handle error from supabase
         if (!user.success) {
@@ -40,9 +43,11 @@ export default function useUserProfile() {
             isMounted.current = true;
 
             // Bind a subscription to auth changes
+            let last_event = null;
             const { subscription } = supabase.auth.onAuthStateChange((event, session) => {
                 // Get user each time the auth state changes
-                if (['SIGNED_IN', 'SIGNED_OUT'].includes(event)) {
+                if (event !== last_event && ['SIGNED_IN', 'SIGNED_OUT'].includes(event)) {
+                    last_event = event;
                     refresh_user();
                 }
             });
@@ -56,7 +61,7 @@ export default function useUserProfile() {
                 subscription?.unsubscribe();
             };
         }
-    }, [refresh_user]);
+    }, [get_user, refresh_user]);
 
     return {
         user,

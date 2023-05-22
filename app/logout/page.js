@@ -1,12 +1,15 @@
 'use client';
-import { useEffect } from 'react';
 import Loader from '../Loader';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase_logout_user } from '@/utils/authentication';
+import { supabase_logout_user } from '../../utils/authentication';
+
+export const revalidate = 0;
 
 export default function Logout() {
     const router = useRouter();
     useEffect(() => {
+        // Redirect to the home page if the user is not logged in
         supabase_logout_user().then(({ success, error }) => {
             if (success) {
                 // Redirect user to the login page
