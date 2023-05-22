@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { superbase_login_user } from '@/utils/authentication';
+import { supabase_login_user } from '@/utils/authentication';
 
 export default function Login() {
     const router = useRouter();
@@ -18,11 +18,8 @@ export default function Login() {
         if (password.length < 8) return alert('Please enter a valid ands strong password');
 
         // Try to login with Supabase
-        const { success, user, error } = await superbase_login_user(email, password);
+        const { success, user, error } = await supabase_login_user(email, password);
         if (success) {
-            // Alert the user
-            alert(`Welcome back to To-Do-It, ${user.name}!\n\nYou have been logged in successfully.`);
-
             // Redirect to the home page
             router.push('/');
         } else {

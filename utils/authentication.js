@@ -46,7 +46,7 @@ export async function supabase_register_user(name, email, password) {
     }
 }
 
-export async function superbase_login_user(email, password) {
+export async function supabase_login_user(email, password) {
     // Sign in with Supabase
     const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -76,4 +76,35 @@ export async function superbase_login_user(email, password) {
         success: false,
         error: 'An unknown error occured',
     };
+}
+
+export async function supabase_get_user() {
+    // Retrieve the supabase session
+    const session = await supabase.auth.getSession();
+    if (session?.data?.session?.user) {
+        // Retrieve the user profile
+        const user_id = session.data.session.user.id;
+        const { data, error } = await supabase.from(SUPABASE_TABLES.USERS).select('*').eq('id', user_id).limit(1);
+
+        // Handle error from Supabase
+        if (error) return { success: false, error: error.message };
+
+        // Return success
+        return { success: true, user: data[0] };
+    }
+
+    return {
+        success: false,
+    };
+}
+
+export async function supabase_logout_user() {
+    // Sign out with Supabase
+    const { error } = await supabase.auth.signOut();
+
+    // Handle error from Supabase
+    if (error) return { success: false, error: error.message };
+
+    // Return success
+    return { success: true };
 }
