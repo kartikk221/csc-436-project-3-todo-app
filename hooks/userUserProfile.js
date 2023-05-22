@@ -2,6 +2,8 @@ import supabase from '@/utils/supabase';
 import { supabase_get_user } from '@/utils/authentication';
 import { useRef, useState, useEffect, useCallback } from 'react';
 
+let cache = null;
+
 export default function useUserProfile() {
     const isMounted = useRef(false);
     const [user, setUser] = useState(undefined);
@@ -9,7 +11,7 @@ export default function useUserProfile() {
 
     const get_user = useCallback(async () => {
         // Get user from supabase
-        const user = await supabase_get_user();
+        const user = cache || (await supabase_get_user());
 
         // Handle error from supabase
         if (!user.success) {
@@ -21,12 +23,14 @@ export default function useUserProfile() {
         if (!user.user) return setUser(null);
 
         // Set user
+        cache = user.user;
         setUser(user.user);
     }, []);
 
     const refresh_user = useCallback(async () => {
         setUser(undefined);
         setError(undefined);
+        cache = null;
         get_user();
     }, [setUser, setError, get_user]);
 

@@ -7,6 +7,7 @@ export default function Login() {
     const router = useRouter();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [inFlight, setInFlight] = useState(false);
 
     const onSubmit = async () => {
         // Ensure a valid email is entered
@@ -18,7 +19,9 @@ export default function Login() {
         if (password.length < 8) return alert('Please enter a valid ands strong password');
 
         // Try to login with Supabase
-        const { success, user, error } = await supabase_login_user(email, password);
+        setInFlight(true);
+        const { success, error } = await supabase_login_user(email, password);
+        setInFlight(false);
         if (success) {
             // Redirect to the home page
             router.push('/');
@@ -58,21 +61,24 @@ export default function Login() {
 
                 <div className="flex items-center justify-between">
                     <p className="text-sm text-gray-500">
-                        No account?{' '}
+                        No account yet?{' '}
                         <a className="ml-1 font-bold text-[#6084f7]" href="/register">
                             Register
                         </a>
                     </p>
 
                     <button
-                        className={`group relative inline-block text-base font-semibold focus:outline-none focus:ring transition-all text-black`}
+                        className={`group relative inline-block text-base font-semibold focus:outline-none focus:ring text-black transition-all`}
                         onClick={onSubmit}
+                        style={{
+                            opacity: inFlight ? 0.5 : 1,
+                        }}
                     >
                         <span className="absolute inset-0 border border-[#6084f7] rounded-md"></span>
                         <span
                             className={`block border border-[#6084f7] bg-[#6084f7] rounded-md px-8 py-2 transition-transform group-hover:-translate-x-1 group-hover:-translate-y-1`}
                         >
-                            Login
+                            {inFlight ? 'Processing' : 'Login'}
                         </span>
                     </button>
                 </div>

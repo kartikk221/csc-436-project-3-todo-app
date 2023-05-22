@@ -46,7 +46,7 @@ const navigation_right_routes_logged_in = [
     {
         id: 'profile',
         name: 'Profile',
-        path: '/user/{user}/list',
+        path: '/user/:user/list',
     },
     {
         id: 'logout',
@@ -56,14 +56,26 @@ const navigation_right_routes_logged_in = [
     },
 ];
 
+function inject_route_paths(routes, user) {
+    return !user?.id
+        ? routes
+        : routes.map((route) => ({
+              ...route,
+              path: route.path.split(':user').join(user.id),
+          }));
+}
+
 export default function NavigationBar() {
     // Use the user profile and pathname hooks for state
     const { user, loading } = useUserProfile();
     const pathname = usePathname();
 
     // Get the routes for the center and right display
-    const center_routes = navigation_center_routes;
-    const right_routes = user ? navigation_right_routes_logged_in : navigation_right_routes_not_logged_in;
+    const center_routes = inject_route_paths(navigation_center_routes, user);
+    const right_routes = inject_route_paths(
+        user ? navigation_right_routes_logged_in : navigation_right_routes_not_logged_in,
+        user
+    );
 
     return (
         <div
