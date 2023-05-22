@@ -1,8 +1,7 @@
 'use client';
 import Link from 'next/link';
-import { useState } from 'react';
-
 import { Inter } from 'next/font/google';
+import { usePathname } from 'next/navigation';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -23,7 +22,7 @@ const navigation_center_routes = [
         name: 'Manage',
         path: '/user/someone/list',
     },
-] as const;
+];
 
 // Define the navigation bar routes for right display
 const navigation_right_routes = [
@@ -37,13 +36,11 @@ const navigation_right_routes = [
         name: 'Register',
         path: '/register',
     },
-] as const;
-
-// Define the type for the navigation bar routes
-type all_route_ids = (typeof navigation_center_routes)[number]['id'] | (typeof navigation_right_routes)[number]['id'];
+];
 
 export default function NavigationBar() {
-    const [activeRoute, setActiveRoute] = useState<all_route_ids>('explore');
+    // Use the router to get the current route
+    const pathname = usePathname();
 
     // Get the routes for the center and right display
     const center_routes = navigation_center_routes;
@@ -56,36 +53,36 @@ export default function NavigationBar() {
             }
         >
             {/* Logo Section */}
-            <div className="fixed bottom-0 left-0 flex h-48 w-full flex-row items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
+            <Link
+                href="/"
+                className="fixed bottom-0 left-0 flex h-48 w-full flex-row items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none"
+            >
                 <div className="flex-row">
                     <h1 className="text-3xl font-black">
                         To-
-                        <strong
-                            style={{
-                                color: '#ff822d',
-                            }}
-                        >
-                            Do
-                        </strong>
+                        <strong className={`text-[#6084f7]`}>Do</strong>
                         -It
                     </h1>
                     <p className="text-md font-medium">Productivity Supercharged!</p>
                 </div>
-            </div>
+            </Link>
 
             {/* Nav Bar */}
             <div className="flex">
-                {center_routes.map(({ id, name, path }) => (
-                    <Link key={id} href={path}>
-                        <h1
-                            className={`text-lg mx-5 transition-colors ${
-                                activeRoute === id ? 'text-[#ff822d] font-black' : 'font-medium hover:text-[#ff822d]'
-                            }`}
-                        >
-                            {name}
-                        </h1>
-                    </Link>
-                ))}
+                {center_routes.map(({ id, name, path }) => {
+                    const active = pathname === path;
+                    return (
+                        <Link key={id} href={path} prefetch={true}>
+                            <h1
+                                className={`text-lg mx-5 transition-colors ${
+                                    active ? `text-[#6084f7] font-black` : 'font-medium hover:text-[#6084f7]'
+                                }`}
+                            >
+                                {name}
+                            </h1>
+                        </Link>
+                    );
+                })}
             </div>
             <div className="flex">
                 {right_routes.map(({ id, name, path }, index) => {
@@ -94,16 +91,17 @@ export default function NavigationBar() {
                         <Link
                             href={path}
                             key={id}
-                            className={`group relative inline-block text-base font-semibold focus:outline-none focus:ring mx-2 transition-all ${
-                                first ? 'text-[#ff822d] hover:text-black' : 'text-black'
+                            prefetch={true}
+                            className={`group relative inline-block text-base font-semibold focus:!outline-none focus:ring mx-2 transition-all ${
+                                first ? 'text-[#6084f7] hover:text-black' : 'text-black'
                             }`}
                         >
-                            <span className="absolute inset-0 border border-[#e67529] rounded-md"></span>
+                            <span className="absolute inset-0 border border-[#6084f7] rounded-md"></span>
                             <span
-                                className={`block border border-[#e67529] ${
-                                    first ? '' : 'bg-[#ff822d]'
+                                className={`block border border-[#6084f7] ${
+                                    first ? '' : 'bg-[#6084f7]'
                                 } rounded-md px-8 py-2 transition-transform group-hover:-translate-x-1 group-hover:-translate-y-1 ${
-                                    first ? 'group-hover:bg-[#ff822d]' : ''
+                                    first ? 'group-hover:bg-[#6084f7]' : ''
                                 }`}
                             >
                                 {name}
