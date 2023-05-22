@@ -1,15 +1,13 @@
 'use client';
 import Link from 'next/link';
 import Loader from '../../../Loader';
-import { useRouter } from 'next/navigation';
-import { useParams } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import useUserProfile from '../../../../hooks/userUserProfile';
 import useListListings from '../../../../hooks/useListListings';
 
 export default function UserList() {
     const router = useRouter();
     let { user_id } = useParams();
-    if (decodeURIComponent(user_id) === ':user') user_id = '';
     const { user, error: user_error, loading: user_loading } = useUserProfile();
     const { listings, error: listings_error, loading: listings_loading } = useListListings(user_id);
 
@@ -26,16 +24,24 @@ export default function UserList() {
     if (user_error || listings_error)
         return <h1 className="text-red-500 my-auto text-2xl font-bold">{user_error || listings_error}</h1>;
 
-    // If there is no user, redirect to login page
-    if (!user) {
-        router.push('/login');
-        return null;
-    }
-
     // Render the list of listings
     const is_me = user?.id === user_id;
+    const owner_details = listings?.[0]?.owner_details;
     return (
         <div className="flex animate-fade-in-up flex-col flex-grow items-center justify-center text-center lg:mb-0 lg:text-left">
+            {owner_details ? (
+                <div className="mx-auto mt-20 max-w-lg text-center">
+                    <h1 className="text-2xl font-black sm:text-3xl">{`${
+                        is_me ? 'Your' : owner_details.name + "'s"
+                    } To-Do Lists`}</h1>
+                    <p className="mt-4 text-white">
+                        {is_me
+                            ? 'Below are all of the lists you have created to stay productive!'
+                            : `See what ${owner_details.name} has been doing recently to stay productive!`}
+                    </p>
+                </div>
+            ) : null}
+
             {listings?.length ? (
                 listings.map((listing, index) => (
                     <Link
@@ -50,7 +56,7 @@ export default function UserList() {
                             <span
                                 className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none"
                                 style={{
-                                    color: '#6084f7',
+                                    color: is_me ? '#6084f7' : '',
                                 }}
                             >
                                 -&gt;

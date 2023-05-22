@@ -13,7 +13,7 @@ export default function useListListings(owner = '') {
             const __owner = _owner || owner || '';
 
             // Resolve from cache if possible
-            if (cache.has(owner)) return setListings(cache.get(__owner));
+            if (cache.has(__owner)) return setListings(cache.get(__owner));
 
             // Get listings from supabase
             const { success, data = [] } = await supabase_get_lists(__owner);
@@ -23,6 +23,9 @@ export default function useListListings(owner = '') {
 
             // Set listings
             if (data.length) cache.set(__owner, data);
+
+            // Sort the listings by decreasing updated_at
+            data.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
 
             // Handle no data being received aka. user is not logged in
             setListings(data);

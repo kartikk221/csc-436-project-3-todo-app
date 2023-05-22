@@ -42,8 +42,9 @@ export default function CreateList() {
         // Handle errors
         if (!success) return alert(error);
 
-        // Clear the cache
+        // Clear the cache for no owner and the user's id aka. explore and manage pages
         cache.delete('');
+        cache.delete(user.id);
 
         // Redirect to the list page
         router.push(`/user/${user.id}/list/${id}`);
@@ -53,8 +54,10 @@ export default function CreateList() {
     return (
         <div className="mx-auto my-auto px-4 py-16 sm:px-6 lg:px-8 animate-fade-in-up">
             <div className="mx-auto max-w-lg text-center">
-                <h1 className="text-2xl font-black sm:text-3xl">Create New List</h1>
-                <p className="mt-4 text-white">Enter a name for your new to-do list below to get started.</p>
+                <h1 className="text-2xl font-black sm:text-3xl">Create New To-Do List</h1>
+                <p className="mt-4 text-white">
+                    Enter a name for your new To-Do list below to get started with keeping track of new things!
+                </p>
             </div>
 
             <div className="mx-auto mb-0 mt-8 max-w-md space-y-4">

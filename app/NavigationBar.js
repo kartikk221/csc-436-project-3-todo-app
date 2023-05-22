@@ -57,12 +57,10 @@ const navigation_right_routes_logged_in = [
 ];
 
 function inject_route_paths(routes, user) {
-    return !user?.id
-        ? routes
-        : routes.map((route) => ({
-              ...route,
-              path: route.path.split(':user').join(user.id),
-          }));
+    return routes.map((route) => ({
+        ...route,
+        path: route.path.split(':user').join(user?.id || ':user'),
+    }));
 }
 
 export default function NavigationBar() {
@@ -109,7 +107,7 @@ export default function NavigationBar() {
                     {center_routes.map(({ id, name, path }) => {
                         const active = pathname === path;
                         return (
-                            <Link key={id} href={path} prefetch={true}>
+                            <Link key={id} href={path.includes(':user') ? '/login' : path} prefetch={true}>
                                 <h1
                                     className={`text-lg mx-5 transition-colors ${
                                         active ? `text-[#6084f7] font-black` : 'font-medium hover:text-[#6084f7]'
