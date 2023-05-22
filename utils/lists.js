@@ -1,9 +1,11 @@
 import supabase from './supabase';
 import { SUPABASE_TABLES } from './tables';
 
-export async function supabase_get_all_lists() {
+export async function supabase_get_lists(owner) {
     // Select all lists from the database
-    const { data: select_data, error: select_error } = await supabase.from(SUPABASE_TABLES.LISTS).select();
+    const { data: select_data, error: select_error } = await (owner
+        ? supabase.from(SUPABASE_TABLES.LISTS).select('*').eq('owner', owner)
+        : supabase.from(SUPABASE_TABLES.LISTS).select('*'));
 
     // Handle errors
     if (select_error) return { success: false, error: select_error.message };

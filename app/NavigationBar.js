@@ -23,7 +23,7 @@ const navigation_center_routes = [
     {
         id: 'manage',
         name: 'Manage',
-        path: '/user/someone/list',
+        path: '/user/:user/list',
     },
 ];
 
@@ -80,45 +80,52 @@ export default function NavigationBar() {
     return (
         <div
             className={
-                'z-10 w-full max-w-7xl items-center justify-between font-mono text-sm lg:flex ' + inter.className
+                'relative flex justify-between w-full max-w-7xl items-center transition-all z-10 font-mono text-sm lg:flex ' +
+                inter.className
             }
+            style={{
+                opacity: loading ? 0 : 1,
+            }}
         >
-            {/* Logo Section */}
+            {/* Left Nav Bar */}
             <Link
                 href="/"
-                className="fixed bottom-0 left-0 flex h-48 w-full flex-row justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none"
+                className="fixed bottom-0 left-0 flex-none h-48 w-full flex-col justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none"
             >
-                <div className="flex-row">
-                    <h1 className="text-3xl font-black">
-                        To-
-                        <strong className={`text-[#6084f7]`}>Do</strong>
-                        -It
-                    </h1>
-                    <p className="text-md font-medium">
-                        {user ? `Welcome Back, ${user.name}!` : 'Productivity Supercharged!'}
-                    </p>
+                <h1 className="flex text-3xl font-black">
+                    To-
+                    <strong className="text-[#6084f7]">Do</strong>
+                    -It
+                </h1>
+                <div className="flex-row transition-all">
+                    <p className="flex text-md font-medium">{user ? `Welcome Back, ` : 'Productivity Supercharged!'}</p>
+                    {user ? <p className="text-[#6084f7] font-bold text-lg">{user?.name}!</p> : undefined}
                 </div>
             </Link>
 
-            {/* Nav Bar */}
-            <div className="flex">
-                {center_routes.map(({ id, name, path }) => {
-                    const active = pathname === path;
-                    return (
-                        <Link key={id} href={path} prefetch={true}>
-                            <h1
-                                className={`text-lg mx-5 transition-colors ${
-                                    active ? `text-[#6084f7] font-black` : 'font-medium hover:text-[#6084f7]'
-                                }`}
-                            >
-                                {name}
-                            </h1>
-                        </Link>
-                    );
-                })}
+            {/* Middle Nav Bar */}
+            <div className="absolute left-1/2 transform -translate-x-1/2">
+                <div className="flex">
+                    {center_routes.map(({ id, name, path }) => {
+                        const active = pathname === path;
+                        return (
+                            <Link key={id} href={path} prefetch={true}>
+                                <h1
+                                    className={`text-lg mx-5 transition-colors ${
+                                        active ? `text-[#6084f7] font-black` : 'font-medium hover:text-[#6084f7]'
+                                    }`}
+                                >
+                                    {name}
+                                </h1>
+                            </Link>
+                        );
+                    })}
+                </div>
             </div>
+
+            {/* Right Nav Bar */}
             <div
-                className={`flex transition-all`}
+                className={`flex flex-none transition-all`}
                 style={{
                     opacity: loading ? 0 : 1,
                 }}

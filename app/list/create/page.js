@@ -5,6 +5,7 @@ import Loader from '../../Loader';
 import { useRouter } from 'next/navigation';
 import useUserProfile from '../../../hooks/userUserProfile';
 import { supabase_create_new_list } from '../../../utils/lists';
+import { cache } from '../../../hooks/useListListings';
 
 export default function CreateList() {
     const router = useRouter();
@@ -41,6 +42,9 @@ export default function CreateList() {
         // Handle errors
         if (!success) return alert(error);
 
+        // Clear the cache
+        cache.delete('');
+
         // Redirect to the list page
         router.push(`/user/${user.id}/list/${id}`);
     };
@@ -50,7 +54,7 @@ export default function CreateList() {
         <div className="mx-auto my-auto px-4 py-16 sm:px-6 lg:px-8 animate-fade-in-up">
             <div className="mx-auto max-w-lg text-center">
                 <h1 className="text-2xl font-black sm:text-3xl">Create New List</h1>
-                <p className="mt-4 text-white">Get started by entering a name for your to-do list below.</p>
+                <p className="mt-4 text-white">Enter a name for your new to-do list below to get started.</p>
             </div>
 
             <div className="mx-auto mb-0 mt-8 max-w-md space-y-4">
