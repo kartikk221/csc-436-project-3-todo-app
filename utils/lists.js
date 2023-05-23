@@ -50,6 +50,9 @@ export async function supabase_get_list_expanded(id) {
     // Ensure list exists
     if (!list) return { success: true, data: null };
 
+    // Sort the items in descreasing index order
+    items.sort((a, b) => b.index - a.index);
+
     // Return the list data
     return {
         success: true,
@@ -71,6 +74,51 @@ export async function supabase_create_new_list(id, owner, name, created_at, upda
 
     // Return the list data
     return { success: true, data: insert_data };
+}
+
+export async function supabase_create_new_list_item(
+    id,
+    owner,
+    name,
+    description,
+    index,
+    completed,
+    created_at,
+    updated_at
+) {
+    // Create a new list item in the database
+    const { data: insert_data, error: insert_error } = await supabase
+        .from(SUPABASE_TABLES.LIST_ITEMS)
+        .insert([{ id, owner, name, description, index, completed, created_at, updated_at }]);
+
+    // Handle errors
+    if (insert_error) return { success: false, error: insert_error.message };
+
+    // Return the list item data
+    return { success: true, data: insert_data };
+}
+
+export async function supabase_updated_list_item(
+    id,
+    owner,
+    name,
+    description,
+    index,
+    completed,
+    created_at,
+    updated_at
+) {
+    // Update the list item in the database
+    const { data: update_data, error: update_error } = await supabase
+        .from(SUPABASE_TABLES.LIST_ITEMS)
+        .update({ name, description, index, completed, created_at, updated_at })
+        .match({ id, owner });
+
+    // Handle errors
+    if (update_error) return { success: false, error: update_error.message };
+
+    // Return the list item data
+    return { success: true, data: update_data };
 }
 
 export async function supabase_update_list(id, name, created_at, updated_at) {

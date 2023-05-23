@@ -1,9 +1,9 @@
 'use client';
 import Link from 'next/link';
-import Loader from '../../../Loader';
+import Loader from '../../Loader';
 import { useRouter, useParams } from 'next/navigation';
-import useUserProfile from '../../../../hooks/userUserProfile';
-import useListListings from '../../../../hooks/useListListings';
+import useUserProfile from '../../../hooks/userUserProfile';
+import useListListings from '../../../hooks/useListListings';
 
 export default function UserList() {
     const router = useRouter();
@@ -46,10 +46,10 @@ export default function UserList() {
                 listings.map((listing, index) => (
                     <Link
                         key={index}
-                        href={`/user/${listing.owner}/list/${listing.id}`}
+                        href={`/user/${listing.owner}/list/${listing.id}${is_me ? '/edit' : ''}`}
                         className={`${
                             index === 0 ? 'mt-10' : ''
-                        } mb-5 group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 border-neutral-700 hover:dark:bg-neutral-800/30`}
+                        } mb-5 group rounded-lg border px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 border-neutral-700 hover:dark:bg-neutral-800/30`}
                     >
                         <h2 className={`mb-3 text-2xl font-semibold`}>
                             {listing.name}{' '}
@@ -73,7 +73,7 @@ export default function UserList() {
             ) : (
                 <Link
                     href={is_me ? '/list/create' : ''}
-                    className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 border-neutral-700 hover:dark:bg-neutral-800/30"
+                    className="group rounded-lg border px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 border-neutral-700 hover:dark:bg-neutral-800/30"
                 >
                     <h2 className={`mb-3 text-2xl font-semibold`}>
                         No Lists Yet{' '}

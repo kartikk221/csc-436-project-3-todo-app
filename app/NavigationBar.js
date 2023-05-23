@@ -23,7 +23,7 @@ const navigation_center_routes = [
     {
         id: 'manage',
         name: 'Manage',
-        path: '/user/:user/list',
+        path: '/user/:user',
     },
 ];
 

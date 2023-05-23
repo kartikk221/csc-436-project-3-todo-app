@@ -13,6 +13,7 @@ module.exports = {
             },
             animation: {
                 'fade-in-up': 'fade-in-up 0.2s ease-out',
+                'fade-in-scale': 'fade-in-scale 0.2s ease-out',
             },
             keyframes: {
                 'fade-in-up': {
@@ -23,6 +24,16 @@ module.exports = {
                     '100%': {
                         opacity: '1',
                         transform: 'translateY(0)',
+                    },
+                },
+                'fade-in-scale': {
+                    '0%': {
+                        opacity: '0',
+                        transform: 'scale(0.95)',
+                    },
+                    '100%': {
+                        opacity: '1',
+                        transform: 'scale(1)',
                     },
                 },
             },

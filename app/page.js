@@ -27,10 +27,11 @@ export default function Home() {
                 listings.map((listing, index) => (
                     <Link
                         key={index}
-                        href={`/user/${listing.owner}/list/${listing.id}`}
+                        prefetch={true}
+                        href={`/user/${listing.owner}/list/${listing.id}${user?.id === listing.owner ? `/edit` : ``}`}
                         className={`${
                             index === 0 ? 'mt-10' : ''
-                        } mb-5 group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 border-neutral-700 hover:dark:bg-neutral-800/30`}
+                        } mb-5 group rounded-lg border px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 border-neutral-700 hover:dark:bg-neutral-800/30`}
                     >
                         <h2 className={`mb-3 text-2xl font-semibold`}>
                             {listing.name}{' '}
@@ -53,8 +54,9 @@ export default function Home() {
                 ))
             ) : (
                 <Link
+                    prefetch={true}
                     href="/list/create"
-                    className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 border-neutral-700 hover:dark:bg-neutral-800/30"
+                    className="group rounded-lg border px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 border-neutral-700 hover:dark:bg-neutral-800/30"
                 >
                     <h2 className={`mb-3 text-2xl font-semibold`}>
                         No Lists Yet{' '}
