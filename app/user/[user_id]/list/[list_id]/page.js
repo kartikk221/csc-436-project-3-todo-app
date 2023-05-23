@@ -25,8 +25,19 @@ export default function ViewList() {
                 <h1 className="text-2xl font-black sm:text-3xl">{list.name}</h1>
                 <p className="mt-4 text-white">
                     This List was created {is_me ? 'by you' : ''} at{' '}
-                    <strong>{new Date(list.created_at).toLocaleString()}</strong> and updated at{' '}
-                    <strong>{new Date(list.updated_at).toLocaleString()}</strong>.
+                    <strong>{new Date(list.created_at).toLocaleString()}</strong> and last updated{' '}
+                    {is_me ? 'by you' : ''} at <strong>{new Date(list.updated_at).toLocaleString()}</strong>.
+                </p>
+
+                <p className="text-md text-gray-500 mt-4">
+                    {is_me ? 'Want to make changes to this list?' : 'Want to see more lists like this?'}{' '}
+                    <Link
+                        className="ml-1 font-bold text-[#6084f7]"
+                        href={is_me ? `/user/${list.owner}/list/${list.id}/edit` : `/user/${list.owner}/list`}
+                        prefetch={true}
+                    >
+                        {is_me ? 'Edit This List' : 'View More'}
+                    </Link>
                 </p>
             </div>
 

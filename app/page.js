@@ -45,7 +45,8 @@ export default function Home() {
                         </h2>
                         <p className={`m-0 max-w-[60ch] text-sm opacity-50`}>
                             This list was created {user?.id === listing.owner ? `by you` : ``} at{' '}
-                            <strong>{new Date(listing.created_at).toLocaleString()}</strong> and updated at{' '}
+                            <strong>{new Date(listing.created_at).toLocaleString()}</strong> and last updated{' '}
+                            {user?.id === listing.owner ? `by you` : ``} at{' '}
                             <strong>{new Date(listing.updated_at).toLocaleString()}</strong>.
                         </p>
                     </Link>
