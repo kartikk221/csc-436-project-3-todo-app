@@ -44,9 +44,9 @@ const navigation_right_routes_not_logged_in = [
 
 const navigation_right_routes_logged_in = [
     {
-        id: 'favorites',
-        name: 'Favorites',
-        path: '/user/:user/list',
+        id: 'profile',
+        name: 'Profile',
+        path: '/user/:user',
     },
     {
         id: 'logout',
