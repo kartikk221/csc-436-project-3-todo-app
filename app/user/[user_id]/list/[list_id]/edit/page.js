@@ -7,7 +7,12 @@ import { useRouter, useParams } from 'next/navigation';
 import { debounce } from '../../../../../../utils/methods';
 import useUserProfile from '../../../../../../hooks/userUserProfile';
 import useListExpanded from '../../../../../../hooks/useListExpanded';
-import { supabase_create_new_list_item, supabase_update_list } from '../../../../../../utils/lists';
+import { cache } from '../../../../../../hooks/useListListings';
+import {
+    supabase_create_new_list_item,
+    supabase_delete_list,
+    supabase_update_list,
+} from '../../../../../../utils/lists';
 
 const onListNameChange = debounce(500, async (list, setListName, refreshPage, original_name, target_name) => {
     if (!target_name) return;
@@ -40,6 +45,7 @@ export default function ListEdit() {
     const [listName, setListName] = useState(undefined);
     const [itemName, setItemName] = useState('');
     const [itemDescription, setItemDescription] = useState('');
+    const [deleteInFlight, setDeleteInFlight] = useState(false);
     const [itemCreateInFlight, setItemCreateInFlight] = useState(false);
     const { user, error: user_error, loading: user_loading } = useUserProfile();
     const { list, error: list_error, loading: list_loading } = useListExpanded(list_id);
@@ -47,14 +53,14 @@ export default function ListEdit() {
     const refreshPage = () => setFrame((frame) => frame + 1);
 
     // Display loader while loading
-    if (user_loading || list_loading) return <Loader />;
+    if (user_loading || list_loading || deleteInFlight) return <Loader />;
 
     // Show error if there is one
     if (user_error || list_error)
         return <h1 className="text-red-500 my-auto text-2xl font-bold">{user_error || list_error}</h1>;
 
     // If this list is not owned by the user redirect them to view page for this list
-    if (user?.id !== list?.owner) {
+    if (user?.id !== list?.owner && !deleteInFlight) {
         router.push(`/user/${list.owner}/list/${list.id}`);
         return <Loader />;
     }
@@ -130,7 +136,7 @@ export default function ListEdit() {
     return (
         <div
             frame={frame}
-            className="flex mt-10 animate-fade-in-up flex-col flex-grow items-center justify-center text-center lg:mb-0 lg:text-left"
+            className="flex mt-12 animate-fade-in-up flex-col flex-grow items-center justify-center text-center lg:mb-0 lg:text-left"
         >
             <div className="mx-auto mb-20 max-w-2xl text-center">
                 <h1 className="text-2xl font-black sm:text-3xl">
@@ -148,9 +154,36 @@ export default function ListEdit() {
                             onListNameChange(list, setListName, refreshPage, list.name, e.target.value);
                         }}
                     />
+
+                    <button
+                        className="text-md mt-3 text-gray-500"
+                        onClick={async () => {
+                            // Ask the user if they are sure they want to delete this list
+                            if (!confirm('Are you sure you want to delete this list?')) return;
+
+                            // Delete the list
+                            setDeleteInFlight(true);
+                            const { success, error } = await supabase_delete_list(list);
+
+                            // Handle error from supabase
+                            if (error) return alert(error);
+
+                            // Clear the cache for no owner and the user's id aka. explore and manage pages
+                            cache.delete('');
+                            cache.delete(user.id);
+
+                            // Redirect to the user's manage page
+                            router.push(`/user/${user.id}`);
+                        }}
+                    >
+                        No longer need this list?{' '}
+                        <Link className="ml-1 font-bold text-[#6084f7]" href="/" prefetch={true}>
+                            Delete This List
+                        </Link>
+                    </button>
                 </div>
 
-                <p className="my-4 text-white">
+                <p className="mb-4 mt-2 text-white">
                     This List was created {is_me ? 'by you' : ''} at{' '}
                     <strong>{new Date(list.created_at).toLocaleString()}</strong> and last updated{' '}
                     {is_me ? 'by you' : ''} at <strong>{new Date(list.updated_at).toLocaleString()}</strong>.

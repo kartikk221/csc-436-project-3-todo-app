@@ -5,16 +5,21 @@ import Loader from '../../Loader';
 import { useRouter } from 'next/navigation';
 import useUserProfile from '../../../hooks/userUserProfile';
 import { supabase_create_new_list } from '../../../utils/lists';
-import { cache } from '../../../hooks/useListListings';
+import useListListings, { cache } from '../../../hooks/useListListings';
 
 export default function CreateList() {
     const router = useRouter();
     const [name, setName] = useState('');
-    const { user, loading } = useUserProfile();
     const [inFlight, setInFlight] = useState(false);
+    const { user, loading: user_loading, error: user_error } = useUserProfile();
+    const { listings = [], loading: listings_loading, error: listings_error } = useListListings();
 
     // Show loader while loading
-    if (loading) return <Loader />;
+    if (user_loading || listings_loading) return <Loader />;
+
+    // Show error if there is one
+    if (user_error || listings_error)
+        return <h1 className="text-red-500 my-auto text-2xl font-bold">{user_error || listings_error}</h1>;
 
     // If the user is not logged in redirect to the login page
     if (!user) {
@@ -27,6 +32,10 @@ export default function CreateList() {
         // Ensure the user entered a valid name
         if (name.length < 3) return alert('Please enter a valid name');
 
+        // Ensure no other list with the same name exists
+        const exists = listings.find((list) => list.name.toLowerCase().trim() === name.toLowerCase().trim());
+        if (exists) return alert('A list with this name already exists.\nPlease enter a different name.');
+
         // Create a new list for the user
         setInFlight(true);
         const id = crypto.randomUUID();
@@ -37,17 +46,19 @@ export default function CreateList() {
             new Date().toISOString(),
             new Date().toISOString()
         );
-        setInFlight(false);
 
         // Handle errors
-        if (!success) return alert(error);
+        if (!success) {
+            setInFlight(false);
+            return alert(error);
+        }
 
         // Clear the cache for no owner and the user's id aka. explore and manage pages
         cache.delete('');
         cache.delete(user.id);
 
         // Redirect to the list page
-        router.push(`/user/${user.id}/list/${id}`);
+        router.push(`/user/${user.id}/list/${id}/edit`);
     };
 
     const inputStyle = 'w-full rounded-lg text-black font-medium border border-gray p-4 pe-12 text-sm shadow-sm';

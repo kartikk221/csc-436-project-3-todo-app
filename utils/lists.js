@@ -121,6 +121,46 @@ export async function supabase_updated_list_item(
     return { success: true, data: update_data };
 }
 
+export async function supabase_delete_list_item(id) {
+    // Delete the list item from the database
+    const { data: delete_data, error: delete_error } = await supabase
+        .from(SUPABASE_TABLES.LIST_ITEMS)
+        .delete()
+        .match({ id });
+
+    // Handle errors
+    if (delete_error) return { success: false, error: delete_error.message };
+
+    // Return the list item data
+    return { success: true, data: delete_data };
+}
+
+export async function supabase_delete_list(list) {
+    // Get all the ids of the list items
+    const item_ids = list.items.map((item) => item.id);
+
+    // Delete all the list items along with the list
+    const [
+        { data: delete_items_data, error: delete_items_error },
+        { data: delete_list_data, error: delete_list_error },
+    ] = await Promise.all([
+        item_ids.length
+            ? supabase.from(SUPABASE_TABLES.LIST_ITEMS).delete().in('id', item_ids)
+            : {
+                  data: [],
+                  error: null,
+              },
+        supabase.from(SUPABASE_TABLES.LISTS).delete().match({ id: list.id }),
+    ]);
+
+    // Handle errors
+    if (delete_items_error || delete_list_error)
+        return { success: false, error: (delete_items_error || delete_list_error).message };
+
+    // Return the list item data
+    return { success: true, data: { delete_items_data, delete_list_data } };
+}
+
 export async function supabase_update_list(id, name, created_at, updated_at) {
     // Update the list in the database
     const { data: update_data, error: update_error } = await supabase

@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { debounce } from '../../../../../../utils/methods';
-import { supabase_updated_list_item } from '../../../../../../utils/lists';
+import { supabase_updated_list_item, supabase_delete_list_item } from '../../../../../../utils/lists';
 
 const itemMovementUpdate = async (items, item, up) => {
-    const neighbor = items.find(({ index }) => index === item.index + (up ? 1 : -1));
+    const itemIndex = items.findIndex(({ id }) => id === item.id);
+    const neighbor = items[itemIndex + (up ? -1 : 1)];
     if (!neighbor) return alert(`Item cannot be moved any ${up ? 'higher' : 'lower'}`);
 
     // Swap the item's indices
@@ -146,8 +147,8 @@ export default function ListItem({ items, item, index, refresh }) {
                     </div>
                 ) : (
                     <>
-                        <h2 className={`mb-2 text-2xl font-semibold`}>{item.name}</h2>
-                        <p className={`m-0 w-[73ch] text-md opacity-50 mb-2`}>{item.description}</p>
+                        <h2 className={`mb-2 text-2xl font-semibold text-[#6084f7]`}>{item.name}</h2>
+                        <p className={`m-0 w-[73ch] text-md opacity-100 mb-2`}>{item.description}</p>
 
                         <label>
                             <input
@@ -159,9 +160,11 @@ export default function ListItem({ items, item, index, refresh }) {
                                     itemCompletionUpdate(item, e.target.checked);
                                 }}
                             ></input>
-                            {itemCompleted
-                                ? 'This item has been successfully completed.'
-                                : 'This item has not been completed yet.'}
+                            <strong className="opacity-50">
+                                {itemCompleted
+                                    ? 'This item has been successfully completed.'
+                                    : 'This item has not been completed yet.'}
+                            </strong>
                         </label>
                     </>
                 )}
@@ -186,6 +189,22 @@ export default function ListItem({ items, item, index, refresh }) {
                         onClick={async () => {
                             // Do not delete if the user is in edit mode
                             if (editMode) return;
+
+                            // Prompt the user to confirm deletion
+                            if (!window.confirm('Are you sure you want to delete this item?')) return;
+
+                            // Delete the item
+                            const { success, error } = await supabase_delete_list_item(item.id);
+
+                            // Handle errors
+                            if (error) return alert(`Failed to delete list item: ${error.message}`);
+
+                            // Find the index of the item and splice it from the list
+                            const itemIndex = items.findIndex(({ id }) => id === item.id);
+                            items.splice(itemIndex, 1);
+
+                            // Refresh the list
+                            refresh();
                         }}
                         style={{
                             opacity: editMode ? 0.5 : 1,

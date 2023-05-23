@@ -30,8 +30,8 @@ export default function ViewList() {
 
     // Render the page
     return (
-        <div className="flex animate-fade-in-up flex-col flex-grow items-center justify-center text-center lg:mb-0 lg:text-left">
-            <div className="mx-auto mb-20 max-w-2xl text-center">
+        <div className="flex mt-12 animate-fade-in-up flex-col flex-grow items-center justify-center text-center lg:mb-0 lg:text-left">
+            <div className="mx-auto mb-10 max-w-2xl text-center">
                 <h1 className="text-2xl font-black sm:text-3xl">{list.name}</h1>
                 <p className="mt-4 text-white">
                     This List was created {is_me ? 'by you' : ''} at{' '}
@@ -52,22 +52,20 @@ export default function ViewList() {
             </div>
 
             {items?.length ? (
-                items.map((listing, index) => (
-                    <Link
+                items.map((item, index) => (
+                    <div
                         key={index}
-                        prefetch={true}
-                        href={`/user/${listing.owner}/list/${listing.id}`}
-                        className={`${
-                            index === 0 ? 'mt-10' : ''
-                        } mb-5 group rounded-lg border px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 border-neutral-700 hover:dark:bg-neutral-800/30`}
+                        className={`mb-5 group rounded-lg border px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 border-neutral-700 hover:dark:bg-neutral-800/30`}
                     >
-                        <h2 className={`mb-3 text-2xl font-semibold`}>{listing.name}</h2>
-                        <p className={`m-0 max-w-[60ch] text-sm opacity-50`}>
-                            This list was created {user?.id === listing.owner ? `by you` : ``} at{' '}
-                            <strong>{new Date(listing.created_at).toLocaleString()}</strong> and updated at{' '}
-                            <strong>{new Date(listing.updated_at).toLocaleString()}</strong>.
+                        <h2 className={`mb-2 text-2xl font-semibold text-[#6084f7]`}>{item.name}</h2>
+                        <p className={`m-0 mb-2 max-w-[60ch] text-lg opacity-100`}>
+                            {item.description || 'No description provided.'}
                         </p>
-                    </Link>
+                        <p className={`m-0 max-w-[60ch] text-sm opacity-50`}>
+                            This item was created at <strong>{new Date(item.created_at).toLocaleString()}</strong> and
+                            updated at <strong>{new Date(item.updated_at).toLocaleString()}</strong>.
+                        </p>
+                    </div>
                 ))
             ) : (
                 <Link
